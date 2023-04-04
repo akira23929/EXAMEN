@@ -1,0 +1,111 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using MySql.Data.MySqlClient;
+
+namespace actividad_BD
+{
+    public partial class Form1 : Form
+    {
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            
+            String nombre = textBox1.Text;
+            String apellido = textBox2.Text;
+            String sql = "INSERT INTO chofer (nombre, apellido) VALUES ('" + nombre + "','" + apellido + "')";
+            MySqlConnection conexionBD = conexion.conexiones();
+            conexionBD.Open();
+
+            try
+            {
+                MySqlCommand comando = new MySqlCommand(sql, conexionBD);
+                comando.ExecuteNonQuery();
+                MessageBox.Show("Registro guardado");
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Error al guardar:" + ex.Message);
+            }
+            finally
+            {
+                conexionBD.Close();
+            }
+
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+            int id = int.Parse(textBox3.Text);
+            MySqlDataReader reader = null;
+            String sql = "SELECT nombre,apellido FROM chofer WHERE id=" + id + " LIMIT 1";
+            MySqlConnection conexionBD = conexion.conexiones();
+            conexionBD.Open();
+
+            try
+            {
+                MySqlCommand comando = new MySqlCommand(sql, conexionBD);
+                reader = comando.ExecuteReader();
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        textBox4.Text = reader.GetString(0);
+                        textBox5.Text = reader.GetString(1);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("No se encontraron registros");
+                }
+
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Error al buscar " + ex.Message);
+            }
+            finally
+            {
+                conexionBD.Close();
+            }
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
+            int id = int.Parse(textBox6.Text);
+            String nombre = textBox7.Text;
+            String sql = "UPDATE chofer SET nombre = '" + nombre + "'WHERE id = " + id;
+            MySqlConnection conexionBD = conexion.conexiones();
+            conexionBD.Open();
+            //agregar usuario
+            try
+            {
+                MySqlCommand comando = new MySqlCommand(sql, conexionBD);
+                comando.ExecuteNonQuery();
+                MessageBox.Show("Registro actualizado");
+            }
+            catch (MySqlException ex)
+            {
+                MessageBox.Show("Error al guardar:" + ex.Message);
+            }
+            finally
+            {
+                conexionBD.Close();
+            }
+
+        }
+    }
+}
